@@ -60,8 +60,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 #define SPOTIFY_NUM_ALBUM_IMAGES 3
 
-#define SPOTIFY_DEBUG true
-
 enum RepeatOptions
 {
   repeat_track,
@@ -177,7 +175,7 @@ public:
   int tagArraySize = 10;
   int currentlyPlayingBufferSize = 10000;
   int playerDetailsBufferSize = 10000;
-  int audioFeaturesBufferSize = 20000;
+  int audioFeaturesBufferSize = 10000;
   bool autoTokenRefresh = true;
   Client *client;
 

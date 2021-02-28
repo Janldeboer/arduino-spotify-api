@@ -103,8 +103,10 @@ CurrentlyPlaying ArduinoSpotify::getCurrentlyPlaying(const char *market)
         }
         else
         {
+#ifdef SPOTIFY_DEBUG
             Serial.print(F("deserializeJson() failed with code "));
             Serial.println(error.c_str());
+#endif
         }
     }
     closeClient();
@@ -122,8 +124,14 @@ AudioFeatures ArduinoSpotify::getAudioFeatures(const char *uri)
     strcat(command, "/");
 
     char id[50];
-    strcpy(id, uri);
-    int i = 0;
+    
+    int i;
+    for(i = 0; uri[i] != '\0'; i++){
+        id[i] = uri[i];
+    }
+    id[i] = '\0';
+    //strcpy(id, uri);
+    i = 0;
     for (; i < 14; i++)
     {
         if (id[i] != check[i])
@@ -134,10 +142,6 @@ AudioFeatures ArduinoSpotify::getAudioFeatures(const char *uri)
             return audioFeatures;
         }
     }
-
-#ifdef SPOTIFY_DEBUG
-    Serial.println("URI valid");
-#endif
 
     strcat(command, id + 14);
 
@@ -185,8 +189,10 @@ AudioFeatures ArduinoSpotify::getAudioFeatures(const char *uri)
         }
         else
         {
+#ifdef SPOTIFY_DEBUG
             Serial.print(F("deserializeJson() failed with code "));
             Serial.println(error.c_str());
+#endif
         }
     }
 
@@ -267,8 +273,10 @@ PlayerDetails ArduinoSpotify::getPlayerDetails(const char *market)
         }
         else
         {
+#ifdef SPOTIFY_DEBUG
             Serial.print(F("deserializeJson() failed with code "));
             Serial.println(error.c_str());
+#endif
         }
     }
     closeClient();
@@ -290,9 +298,11 @@ bool ArduinoSpotify::getImage(char *imageUrl, Stream *file)
 
     if (strncmp(imageUrl, "https://", 8) != 0)
     {
+#ifdef SPOTIFY_DEBUG
         Serial.print(F("Url not in expected format: "));
         Serial.println(imageUrl);
         Serial.println("(expected it to start with \"https://\")");
+#endif
         return false;
     }
 
