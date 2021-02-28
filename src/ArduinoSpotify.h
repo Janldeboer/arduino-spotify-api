@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #include <ArduinoJson.h>
 #include <Client.h>
 
+
 #define SPOTIFY_HOST "api.spotify.com"
 #define SPOTIFY_ACCOUNTS_HOST "accounts.spotify.com"
 // Fingerprint correct as of July 23rd, 2020
@@ -53,9 +54,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 #define SPOTIFY_SEEK_ENDPOINT "/v1/me/player/seek"
 
+#define SPOTIFY_AUDIO_FEATURES_ENDPOINT "/v1/audio-features"
+
 #define SPOTIFY_TOKEN_ENDPOINT "/api/token"
 
 #define SPOTIFY_NUM_ALBUM_IMAGES 3
+
+#define SPOTIFY_DEBUG true
 
 enum RepeatOptions
 {
@@ -111,6 +116,25 @@ struct CurrentlyPlaying
   bool error;
 };
 
+struct AudioFeatures
+{
+  float danceability;
+  float energy;
+  int key;
+  float loudness;
+  int mode;
+  float speechiness;
+  float acousticness;
+  float instrumentalness;
+  float liveness;
+  float valence;
+  float tempo;
+  int duration_ms;
+  int time_signature;
+  
+  bool error;
+};
+
 class ArduinoSpotify
 {
 public:
@@ -132,6 +156,8 @@ public:
   // User methods
   CurrentlyPlaying getCurrentlyPlaying(const char *market = "");
   PlayerDetails getPlayerDetails(const char *market = "");
+  AudioFeatures getAudioFeatures(const char * uri);
+  
   bool play(const char *deviceId = "");
   bool playAdvanced(char *body, const char *deviceId = "");
   bool pause(const char *deviceId = "");
@@ -151,6 +177,7 @@ public:
   int tagArraySize = 10;
   int currentlyPlayingBufferSize = 10000;
   int playerDetailsBufferSize = 10000;
+  int audioFeaturesBufferSize = 20000;
   bool autoTokenRefresh = true;
   Client *client;
 
