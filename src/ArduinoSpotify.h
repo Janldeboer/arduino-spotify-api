@@ -147,7 +147,7 @@ public:
 
   // Generic Request Methods
   int makeGetRequest(const char *command, const char *authorization, const char *accept = "application/json", const char *host = SPOTIFY_HOST);
-  int makeRequestWithBody(const char *type, const char *command, const char *authorization, const char *body = "", const char *contentType = "application/json", const char *host = SPOTIFY_HOST);
+  int makeRequestWithBody(const char *type, const char *command, const char *authorization, const char *accept, const char *body = "", const char *contentType = "application/json", const char *host = SPOTIFY_HOST);
   int makePostRequest(const char *command, const char *authorization, const char *body = "", const char *contentType = "application/json", const char *host = SPOTIFY_HOST);
   int makePutRequest(const char *command, const char *authorization, const char *body = "", const char *contentType = "application/json", const char *host = SPOTIFY_HOST);
 
