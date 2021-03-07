@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 #include "ArduinoSpotify.h"
 
-int ArduinoSpotify::makeRequestWithBody(const char *type, const char *command, const char *authorization, const char *accept, const char *body, const char *contentType, const char *host)
+int ArduinoSpotify::makeRequestWithBody(const char *type, const char *command, bool authorized, const char *accept, const char *body, const char *contentType, const char *host)
 {
     client->flush();
     client->setTimeout(SPOTIFY_TIMEOUT);
@@ -54,10 +54,14 @@ int ArduinoSpotify::makeRequestWithBody(const char *type, const char *command, c
         client->println(contentType);
     }
 
-    if (authorization != NULL)
+    if (authorized)
     {
+        if (autoTokenRefresh)
+        {
+            checkAndRefreshAccessToken();
+        }
         client->print(F("Authorization: "));
-        client->println(authorization);
+        client->println(_bearerToken);
     }
 
     client->println(F("Cache-Control: no-cache"));
@@ -82,17 +86,17 @@ int ArduinoSpotify::makeRequestWithBody(const char *type, const char *command, c
     return statusCode;
 }
 
-int ArduinoSpotify::makePutRequest(const char *command, const char *authorization, const char *body, const char *contentType, const char *host)
+int ArduinoSpotify::makePutRequest(const char *command, bool authorized, const char *body, const char *contentType, const char *host)
 {
-    return makeRequestWithBody("PUT ", command, authorization, NULL, body, contentType);
+    return makeRequestWithBody("PUT ", command, authorized, NULL, body, contentType, host);
 }
 
-int ArduinoSpotify::makePostRequest(const char *command, const char *authorization, const char *body, const char *contentType, const char *host)
+int ArduinoSpotify::makePostRequest(const char *command, bool authorized, const char *body, const char *contentType, const char *host)
 {
-    return makeRequestWithBody("POST ", command, authorization, NULL, body, contentType, host);
+    return makeRequestWithBody("POST ", command, authorized, NULL, body, contentType, host);
 }
 
-int ArduinoSpotify::makeGetRequest(const char *command, const char *authorization, const char *accept, const char *host)
+int ArduinoSpotify::makeGetRequest(const char *command, bool authorized, const char *accept, const char *host)
 {
-    return makeRequestWithBody("GET ", command, authorization, accept, NULL, NULL, host);
+    return makeRequestWithBody("GET ", command, authorized, accept, NULL, NULL, host);
 }

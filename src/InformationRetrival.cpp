@@ -39,12 +39,8 @@ CurrentlyPlaying ArduinoSpotify::getCurrentlyPlaying(const char *market)
     CurrentlyPlaying currentlyPlaying;
     // This flag will get cleared if all goes well
     currentlyPlaying.error = true;
-    if (autoTokenRefresh)
-    {
-        checkAndRefreshAccessToken();
-    }
 
-    int statusCode = makeGetRequest(command, _bearerToken);
+    int statusCode = makeGetRequest(command);
     
     if (statusCode > 0)
     {
@@ -150,13 +146,8 @@ AudioFeatures ArduinoSpotify::getAudioFeatures(const char *uri)
     Serial.println(command);
 #endif
 
-    if (autoTokenRefresh)
-    {
-        checkAndRefreshAccessToken();
-    }
-
     const size_t bufferSize = audioFeaturesBufferSize;
-    int statusCode = makeGetRequest(command, _bearerToken);
+    int statusCode = makeGetRequest(command);
 
     if (statusCode > 0)
     {
@@ -201,6 +192,85 @@ AudioFeatures ArduinoSpotify::getAudioFeatures(const char *uri)
     return audioFeatures;
 }
 
+/*AudioAnalysis ArduinoSpotify::getAudioAnalaysis(const char *uri)
+{
+    const char check[] = "spotify:track:";
+    
+    char command[200] = SPOTIFY_AUDIO_ANALYSIS_ENDPOINT;
+    strcat(command, "/");
+    
+    char id[50];
+    
+    int i;
+    for(i = 0; uri[i] != '\0'; i++){
+        id[i] = uri[i];
+    }
+    id[i] = '\0';
+    //strcpy(id, uri);
+    i = 0;
+    for (; i < 14; i++)
+        {
+            if (id[i] != check[i])
+                {
+#ifdef SPOTIFY_DEBUG
+                    Serial.println("URI invalid");
+#endif
+                    return audioFeatures;
+                }
+        }
+    
+    strcat(command, id + 14);
+    
+#ifdef SPOTIFY_DEBUG
+    Serial.println(command);
+#endif
+    
+    const size_t bufferSize = audioAnalysisBufferSize;
+    int statusCode = makeGetRequest(command);
+    
+    if (statusCode > 0)
+        {
+            skipHeaders();
+        }
+    
+    if (statusCode == 200)
+        {
+            // Allocate DynamicJsonDocument
+            DynamicJsonDocument doc(bufferSize);
+            
+            // Parse JSON object
+            DeserializationError error = deserializeJson(doc, *client);
+            if (!error)
+                {
+                    audioFeatures.danceability = doc["danceability"].as<float>();
+                    audioFeatures.energy = doc["energy"].as<float>();
+                    audioFeatures.key = doc["key"].as<int>();
+                    audioFeatures.loudness = doc["loudness"].as<float>();
+                    audioFeatures.mode = doc["mode"].as<int>();
+                    audioFeatures.speechiness = doc["speechiness"].as<float>();
+                    audioFeatures.acousticness = doc["acousticness"].as<float>();
+                    audioFeatures.instrumentalness = doc["instrumentalness"].as<float>();
+                    audioFeatures.liveness = doc["liveness"].as<float>();
+                    audioFeatures.valence = doc["valence"].as<float>();
+                    audioFeatures.tempo = doc["tempo"].as<float>();
+                    audioFeatures.duration_ms = doc["duration_ms"].as<int>();
+                    audioFeatures.time_signature = doc["time_signature"].as<int>();
+                    
+                    audioFeatures.error = false;
+                }
+            else
+                {
+#ifdef SPOTIFY_DEBUG
+                    Serial.print(F("deserializeJson() failed with code "));
+                    Serial.println(error.c_str());
+#endif
+                }
+        }
+    
+    closeClient();
+    return audioFeatures;
+}*/
+
 PlayerDetails ArduinoSpotify::getPlayerDetails(const char *market)
 {
     char command[100] = SPOTIFY_PLAYER_ENDPOINT;
@@ -220,12 +290,8 @@ PlayerDetails ArduinoSpotify::getPlayerDetails(const char *market)
     PlayerDetails playerDetails;
     // This flag will get cleared if all goes well
     playerDetails.error = true;
-    if (autoTokenRefresh)
-    {
-        checkAndRefreshAccessToken();
-    }
-
-    int statusCode = makeGetRequest(command, _bearerToken);
+    
+    int statusCode = makeGetRequest(command);
     if (statusCode > 0)
     {
         skipHeaders();
@@ -337,7 +403,7 @@ bool ArduinoSpotify::getImage(char *imageUrl, Stream *file)
 #endif
 
     bool status = false;
-    int statusCode = makeGetRequest(path, NULL, "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8", host);
+    int statusCode = makeGetRequest(path, false, "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8", host);
 #ifdef SPOTIFY_DEBUG
     Serial.print(F("statusCode: "));
     Serial.println(statusCode);

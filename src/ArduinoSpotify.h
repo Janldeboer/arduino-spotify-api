@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #include <ArduinoJson.h>
 #include <Client.h>
 
+#define SPOTIFY_DEBUG true
 
 #define SPOTIFY_HOST "api.spotify.com"
 #define SPOTIFY_ACCOUNTS_HOST "accounts.spotify.com"
@@ -146,10 +147,10 @@ public:
   const char *requestAccessTokens(const char *code, const char *redirectUrl);
 
   // Generic Request Methods
-  int makeGetRequest(const char *command, const char *authorization, const char *accept = "application/json", const char *host = SPOTIFY_HOST);
-  int makeRequestWithBody(const char *type, const char *command, const char *authorization, const char *accept, const char *body = "", const char *contentType = "application/json", const char *host = SPOTIFY_HOST);
-  int makePostRequest(const char *command, const char *authorization, const char *body = "", const char *contentType = "application/json", const char *host = SPOTIFY_HOST);
-  int makePutRequest(const char *command, const char *authorization, const char *body = "", const char *contentType = "application/json", const char *host = SPOTIFY_HOST);
+  int makeRequestWithBody(const char *type, const char *command, bool authorized, const char *accept, const char *body = "", const char *contentType = "application/json", const char *host = SPOTIFY_HOST);
+  int makePostRequest(const char *command, bool authorized = true, const char *body = "", const char *contentType = "application/json", const char *host = SPOTIFY_HOST);
+  int makePutRequest(const char *command, bool authorized = true, const char *body = "", const char *contentType = "application/json", const char *host = SPOTIFY_HOST);
+  int makeGetRequest(const char *command, bool authorized = true, const char *accept = "application/json", const char *host = SPOTIFY_HOST);
 
   // User methods
   CurrentlyPlaying getCurrentlyPlaying(const char *market = "");
